@@ -1,0 +1,42 @@
+http:
+  middlewares:
+
+    # ── Security headers ───────────────────────────────────────────────────────
+    security-headers:
+      headers:
+        # HSTS — 1 year
+        stsSeconds: 31536000
+        stsIncludeSubdomains: true
+        stsPreload: true
+        forceSTSHeader: true
+        # Content security
+        contentTypeNosniff: true
+        browserXssFilter: true
+        frameDeny: true
+        referrerPolicy: "strict-origin-when-cross-origin"
+        # Remove fingerprinting headers
+        customResponseHeaders:
+          X-Powered-By: ""
+          Server: ""
+        # Permissions policy
+        permissionsPolicy: "camera=(), microphone=(), geolocation=(), payment=()"
+
+    # ── Rate limiting — public API (booking endpoint) ──────────────────────────
+    rate-limit-api:
+      rateLimit:
+        average: 20
+        burst: 40
+        period: 1m
+        sourceCriterion:
+          ipStrategy:
+            depth: 1
+
+    # ── Rate limiting — auth (stricter) ────────────────────────────────────────
+    rate-limit-auth:
+      rateLimit:
+        average: 5
+        burst: 5
+        period: 15m
+        sourceCriterion:
+          ipStrategy:
+            depth: 1
