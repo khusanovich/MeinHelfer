@@ -1,0 +1,15 @@
+[build]
+  # Point Netlify at the frontend subdirectory
+  base    = "frontend"
+  command = "npm ci && npm run build"
+  publish = ".next"
+
+[build.environment]
+  NODE_VERSION              = "22"
+  NEXT_TELEMETRY_DISABLED   = "1"
+  # Set NEXT_PUBLIC_API_URL in Netlify → Site settings → Environment variables
+  # e.g. https://api.meinhelfer.de  (your Railway / Render / Hetzner backend URL)
+
+# Netlify's Next.js runtime — handles SSR, ISR, image optimisation
+[[plugins]]
+  package = "@netlify/plugin-nextjs"
