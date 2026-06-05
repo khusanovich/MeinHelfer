@@ -1,25 +1,19 @@
-import type { Metadata } from "next";
-import { notFound } from "next/navigation";
+"use client";
+
+import { use } from "react";
 import Link from "next/link";
 import { ChevronLeft } from "lucide-react";
+import { Skeleton } from "@/components/ui/skeleton";
 import RequestDetail from "@/components/admin/RequestDetail";
-import { api } from "@/lib/api";
+import { useRequest } from "@/hooks/useRequests";
 
-export const metadata: Metadata = { title: "Anfrage Details – MeinHelfer Admin" };
-
-export default async function RequestDetailPage({
+export default function RequestDetailPage({
   params,
 }: {
   params: Promise<{ id: string }>;
 }) {
-  const { id } = await params;
-
-  let request;
-  try {
-    request = await api.getRequest(id);
-  } catch {
-    notFound();
-  }
+  const { id } = use(params);
+  const { data, isLoading, error } = useRequest(id);
 
   return (
     <div className="space-y-6">
@@ -40,7 +34,23 @@ export default async function RequestDetailPage({
         </p>
       </div>
 
-      <RequestDetail initial={request} />
+      {isLoading && (
+        <div className="grid gap-6 lg:grid-cols-3">
+          <div className="space-y-4 lg:col-span-2">
+            <Skeleton className="h-64 w-full rounded-lg" />
+            <Skeleton className="h-32 w-full rounded-lg" />
+          </div>
+          <Skeleton className="h-80 w-full rounded-lg" />
+        </div>
+      )}
+
+      {error && (
+        <div className="rounded-lg border border-destructive/50 bg-destructive/10 p-6 text-center text-sm text-destructive">
+          Anfrage konnte nicht geladen werden. Bitte prüfen Sie die ID oder versuchen Sie es erneut.
+        </div>
+      )}
+
+      {data && <RequestDetail initial={data} />}
     </div>
   );
 }

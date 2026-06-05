@@ -2,7 +2,7 @@
 
 import useSWR from "swr";
 import { api } from "@/lib/api";
-import type { AdminRequestListItem, PaginatedResponse } from "@/types/api";
+import type { AdminRequestDetail, AdminRequestListItem, PaginatedResponse } from "@/types/api";
 import type { RequestStatus, ServiceType } from "@/types/api";
 
 export interface RequestFilters {
@@ -38,4 +38,12 @@ export function useRequests(filters: RequestFilters = {}) {
 export function useDashboard() {
   const { data, error, isLoading } = useSWR("dashboard", api.getDashboard);
   return { data, error, isLoading };
+}
+
+export function useRequest(id: string) {
+  const { data, error, isLoading, mutate } = useSWR<AdminRequestDetail>(
+    id ? ["request", id] : null,
+    () => api.getRequest(id),
+  );
+  return { data, error, isLoading, mutate };
 }
