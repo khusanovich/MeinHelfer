@@ -9,7 +9,7 @@ from typing import Sequence, Union
 
 import sqlalchemy as sa
 from alembic import op
-from sqlalchemy.dialects.postgresql import UUID
+from sqlalchemy.dialects.postgresql import ENUM as PgENUM, UUID
 
 revision: str = "0003"
 down_revision: Union[str, None] = "0002"
@@ -23,7 +23,7 @@ def upgrade() -> None:
         sa.Column("id", UUID(as_uuid=True), primary_key=True, server_default=sa.text("gen_random_uuid()")),
         sa.Column("reference_code", sa.String(16), nullable=False),
 
-        sa.Column("service_type", sa.Enum(name="service_type", create_constraint=False), nullable=False),
+        sa.Column("service_type", PgENUM(name="service_type", create_type=False), nullable=False),
         sa.Column("helper_count", sa.SmallInteger(), nullable=False),
         sa.Column("scheduled_date", sa.Date(), nullable=False),
         sa.Column("scheduled_time", sa.Time(), nullable=False),
@@ -40,7 +40,7 @@ def upgrade() -> None:
         sa.Column("customer_phone", sa.String(50), nullable=True),
 
         sa.Column("description", sa.Text(), nullable=False),
-        sa.Column("status", sa.Enum(name="request_status", create_constraint=False), nullable=False, server_default="pending"),
+        sa.Column("status", PgENUM(name="request_status", create_type=False), nullable=False, server_default="pending"),
         sa.Column("admin_notes", sa.Text(), nullable=True),
         sa.Column("assigned_helper", sa.String(255), nullable=True),
 

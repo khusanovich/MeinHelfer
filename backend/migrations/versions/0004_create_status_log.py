@@ -9,7 +9,7 @@ from typing import Sequence, Union
 
 import sqlalchemy as sa
 from alembic import op
-from sqlalchemy.dialects.postgresql import UUID
+from sqlalchemy.dialects.postgresql import ENUM as PgENUM, UUID
 
 revision: str = "0004"
 down_revision: Union[str, None] = "0003"
@@ -27,8 +27,8 @@ def upgrade() -> None:
             sa.ForeignKey("service_requests.id", ondelete="CASCADE"),
             nullable=False,
         ),
-        sa.Column("old_status", sa.Enum(name="request_status", create_constraint=False), nullable=True),
-        sa.Column("new_status", sa.Enum(name="request_status", create_constraint=False), nullable=False),
+        sa.Column("old_status", PgENUM(name="request_status", create_type=False), nullable=True),
+        sa.Column("new_status", PgENUM(name="request_status", create_type=False), nullable=False),
         sa.Column(
             "changed_by",
             UUID(as_uuid=True),

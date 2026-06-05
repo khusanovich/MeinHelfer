@@ -53,7 +53,7 @@ dev:
 	$(COMPOSE) up -d --build
 	@echo ""
 	@echo "✓  Dev stack running"
-	@echo "   Frontend  → http://localhost:3000"
+	@echo "   Frontend  → http://localhost:3001"
 	@echo "   Backend   → http://localhost:8000"
 	@echo "   API docs  → http://localhost:8000/api/v1/docs"
 	@echo ""

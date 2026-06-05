@@ -30,7 +30,7 @@ services:
     environment:
       DATABASE_URL: postgresql+asyncpg://${POSTGRES_USER:-meinhelfer}:${POSTGRES_PASSWORD:-devpassword}@postgres:5432/${POSTGRES_DB:-meinhelfer}
       ENVIRONMENT: development
-      CORS_ORIGINS: http://localhost:3000
+      CORS_ORIGINS: '["http://localhost:3001"]'
     ports:
       - "8000:8000"
     volumes:
@@ -48,7 +48,7 @@ services:
     environment:
       NEXT_PUBLIC_API_URL: http://localhost:8000
     ports:
-      - "3000:3000"
+      - "3001:3000"
     volumes:
       - ./frontend/src:/app/src
       - ./frontend/public:/app/public
