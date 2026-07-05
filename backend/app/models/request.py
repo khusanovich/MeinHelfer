@@ -37,7 +37,7 @@ class ServiceRequest(Base, UUIDPrimaryKeyMixin, TimestampMixin):
         String(16), unique=True, nullable=False
     )
     service_type: Mapped[ServiceType] = mapped_column(
-        SAEnum(ServiceType, name="service_type", create_type=False, create_constraint=False),
+        SAEnum(ServiceType, name="service_type", create_type=False, create_constraint=False, native_enum=False),
         nullable=False,
     )
     helper_count: Mapped[int] = mapped_column(SmallInteger, nullable=False)
@@ -60,7 +60,7 @@ class ServiceRequest(Base, UUIDPrimaryKeyMixin, TimestampMixin):
 
     # Status
     status: Mapped[RequestStatus] = mapped_column(
-        SAEnum(RequestStatus, name="request_status", create_type=False, create_constraint=False),
+        SAEnum(RequestStatus, name="request_status", create_type=False, create_constraint=False, native_enum=False),
         nullable=False,
         default=RequestStatus.PENDING,
     )
