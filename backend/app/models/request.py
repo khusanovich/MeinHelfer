@@ -1,6 +1,7 @@
 import uuid
 from datetime import date, datetime, time
 from decimal import Decimal
+from enum import Enum as PyEnum
 
 from sqlalchemy import (
     Boolean,
@@ -14,6 +15,7 @@ from sqlalchemy import (
     String,
     Text,
     Time,
+    TypeDecorator,
     func,
 )
 from sqlalchemy.dialects.postgresql import UUID
@@ -21,6 +23,33 @@ from sqlalchemy.orm import Mapped, mapped_column, relationship
 
 from app.domain.enums import RequestStatus, ServiceType
 from app.models.base import Base, TimestampMixin, UUIDPrimaryKeyMixin
+
+
+class PgEnum(TypeDecorator):
+    """PostgreSQL Enum that uses enum values, not names."""
+    impl = SAEnum
+    cache_ok = True
+
+    def __init__(self, enum_class: type[PyEnum], name: str, **kwargs):
+        self.enum_class = enum_class
+        # Pass the enum values (lowercase) to create the PostgreSQL enum
+        super().__init__(
+            *[e.value for e in enum_class],
+            name=name,
+            **kwargs
+        )
+
+    def process_bind_param(self, value, dialect):
+        if value is None:
+            return value
+        if isinstance(value, self.enum_class):
+            return value.value
+        return value
+
+    def process_result_value(self, value, dialect):
+        if value is None:
+            return value
+        return self.enum_class(value)
 
 
 class ServiceRequest(Base, UUIDPrimaryKeyMixin, TimestampMixin):
@@ -37,7 +66,7 @@ class ServiceRequest(Base, UUIDPrimaryKeyMixin, TimestampMixin):
         String(16), unique=True, nullable=False
     )
     service_type: Mapped[ServiceType] = mapped_column(
-        SAEnum(ServiceType, name="service_type", create_type=False, create_constraint=False, native_enum=False),
+        PgEnum(ServiceType, name="service_type"),
         nullable=False,
     )
     helper_count: Mapped[int] = mapped_column(SmallInteger, nullable=False)
@@ -60,7 +89,7 @@ class ServiceRequest(Base, UUIDPrimaryKeyMixin, TimestampMixin):
 
     # Status
     status: Mapped[RequestStatus] = mapped_column(
-        SAEnum(RequestStatus, name="request_status", create_type=False, create_constraint=False, native_enum=False),
+        PgEnum(RequestStatus, name="request_status"),
         nullable=False,
         default=RequestStatus.PENDING,
     )
@@ -100,11 +129,11 @@ class RequestStatusLog(Base, UUIDPrimaryKeyMixin):
         nullable=False,
     )
     old_status: Mapped[RequestStatus | None] = mapped_column(
-        SAEnum(RequestStatus, name="request_status", create_type=False, create_constraint=False),
+        PgEnum(RequestStatus, name="request_status"),
         nullable=True,
     )
     new_status: Mapped[RequestStatus] = mapped_column(
-        SAEnum(RequestStatus, name="request_status", create_type=False, create_constraint=False),
+        PgEnum(RequestStatus, name="request_status"),
         nullable=False,
     )
     changed_by: Mapped[uuid.UUID | None] = mapped_column(
