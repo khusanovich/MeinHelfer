@@ -1,0 +1,17 @@
+# Cloudflare Pages configuration
+name = "meinhelfer"
+compatibility_date = "2024-01-01"
+
+# Pages build configuration
+[build]
+command = "cd frontend && npm ci && npm run build"
+cwd = "frontend"
+
+[build.upload]
+format = "service-worker"
+dir = "frontend/.next"
+
+# Environment variables (also set these in Cloudflare dashboard)
+[env.production]
+# NEXT_PUBLIC_API_URL will be set in Cloudflare Pages dashboard
+# Example: https://meinhelfer-backend-production.up.railway.app
